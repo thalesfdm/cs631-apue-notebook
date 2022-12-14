@@ -19,24 +19,25 @@
 int
 main(int argc, char **argv)
 {
-	DIR *dp;
-	struct dirent *dirp;
+	struct dirent **namelist;
+	int n;
 
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s dir_name\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	if ((dp = opendir(argv[1])) == NULL) {
+	if ((n = scandir(argv[1], &namelist, NULL, alphasort)) == -1) {
 		fprintf(stderr, "Unable to open '%s': %s\n", argv[1], strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
-	while ((dirp = readdir(dp)) != NULL) {
-		printf("%s\n", dirp->d_name);
+	for (int i = 0; i < n; i++) {
+		printf("%s\n", namelist[i]->d_name);
 	}
+	
+	free(namelist);
 
-	(void)closedir(dp);
 	return EXIT_SUCCESS;
 }
 
